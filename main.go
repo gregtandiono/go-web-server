@@ -46,7 +46,8 @@ func fetchOneUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func fetchAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
-	user.FetchAll()
+	people := user.FetchAll()
+	json.NewEncoder(w).Encode(people)
 }
 
 func logger(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
