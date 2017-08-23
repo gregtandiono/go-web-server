@@ -20,3 +20,18 @@ func (s *Storage) Init() *bolt.DB {
 
 	return db
 }
+
+// BucketInit creates buckets
+func (s *Storage) BucketInit() {
+	db := s.Init()
+	defer db.Close()
+
+	db.Update(func(tx *bolt.Tx) error {
+		fmt.Println("################# INITIALIZING BUCKETS #################")
+		_, err := tx.CreateBucketIfNotExists([]byte("USERS"))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
