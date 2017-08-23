@@ -14,6 +14,7 @@ import (
 
 func newUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
+
 	if r.Body == nil {
 		http.Error(w, "no request body found", 400)
 		return
@@ -57,10 +58,8 @@ func logger(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	log.Printf("[%s] %q %v", r.Method, r.URL.String(), t2.Sub(t1))
 }
 
-func main() {
-	// init DB
-	var s Storage
-	s.BucketInit()
+// Router is a collection of the application's routes and returns an instance of negroni
+func Router() *negroni.Negroni {
 
 	// router
 	r := mux.NewRouter()
@@ -73,6 +72,14 @@ func main() {
 	r.HandleFunc("/users/{id}", fetchOneUserHandler).Methods("GET")
 
 	n.UseHandler(r)
+	return n
+}
+
+func main() {
+	// init DB
+	var s Storage
+	s.BucketInit()
+
 	fmt.Println("server is running on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", n))
+	log.Fatal(http.ListenAndServe(":8080", Router()))
 }
