@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
-	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/boltdb/bolt"
 	uuid "github.com/satori/go.uuid"
 )
@@ -60,14 +60,17 @@ func (u *User) Fetch() User {
 }
 
 // FetchAll returns an array of users
-func (u *User) FetchAll() []User {
-	users := []User{}
-	for i := 0; i < 20; i++ {
-		var user User
-		user.ID = uuid.NewV4()
-		user.Name = randomdata.FullName(randomdata.RandomGender)
-		user.Email = randomdata.Email()
-		users = append(users, user)
-	}
-	return users
+func (u *User) FetchAll() {
+	var s Storage
+	db := s.Init()
+	defer db.Close()
+
+	db.View(func(tx *bolt.Tx) error {
+		bkt := tx.Bucket([]byte("USERS"))
+		c := bkt.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			fmt.Printf("key=%s, value=%s\n", k, v)
+		}
+		return nil
+	})
 }

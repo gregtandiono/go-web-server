@@ -44,6 +44,11 @@ func fetchOneUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(u)
 }
 
+func fetchAllUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var user User
+	user.FetchAll()
+}
+
 func logger(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	t1 := time.Now()
 	next(w, r)
@@ -62,6 +67,7 @@ func main() {
 	n := negroni.New()
 	n.Use(negroni.HandlerFunc(logger))
 
+	r.HandleFunc("/users", fetchAllUsersHandler).Methods("GET")
 	r.HandleFunc("/users", newUserHandler).Methods("POST")
 	r.HandleFunc("/users/{id}", fetchOneUserHandler).Methods("GET")
 
