@@ -52,9 +52,17 @@ func TestUserSave(t *testing.T) {
 }
 
 func TestUserFetch(t *testing.T) {
+	// we're going to fetch the record that was created in the previous test
+	var user User
+	user.ID = uuid.FromStringOrNil("c52639a8-d1ba-4886-8fe8-49818a84d314")
+	u := user.Fetch()
 
+	assert.Equal(t, u.Name, "Mickey Mouse", "OK")
+	assert.Equal(t, u.Email, "mickey@disney.com", "OK")
 }
 
 func TestUserFetchAll(t *testing.T) {
-
+	var user User
+	people := user.FetchAll()
+	assert.Equal(t, len(people), 22, "OK")
 }
