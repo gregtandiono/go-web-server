@@ -12,4 +12,4 @@ This repo is also a part of a docker related tutorial that I'm currently writing
 - [x] Create a User Model
 - [x] Create a User route handler
 - [x] Setup Bolt DB to store users
-- [ ] Write tests for each of the routes
+- [x] Write tests for each of the routes
