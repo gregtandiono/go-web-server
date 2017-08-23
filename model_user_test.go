@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"testing"
 
+	"github.com/boltdb/bolt"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,6 +20,34 @@ func TestNewUser(t *testing.T) {
 }
 
 func TestUserSave(t *testing.T) {
+
+	u := NewUser(
+		uuid.FromStringOrNil("c52639a8-d1ba-4886-8fe8-49818a84d314"),
+		"Mickey Mouse",
+		"mickey@disney.com",
+	)
+	err := u.Save()
+	if err != nil {
+		t.Error("TestUserSave failed \n", err)
+	}
+
+	// Now let's verify if the record is in the DB
+	var s Storage
+	db := s.Init()
+	defer db.Close()
+
+	db.View(func(tx *bolt.Tx) error {
+		var user User
+		bkt := tx.Bucket([]byte("USERS"))
+		v := bkt.Get([]byte("c52639a8-d1ba-4886-8fe8-49818a84d314"))
+		err := json.Unmarshal(v, &user)
+		if err != nil {
+			return err
+		}
+		assert.Equal(t, user.Name, "Mickey Mouse", "OK")
+		assert.Equal(t, user.Email, "mickey@disney.com", "OK")
+		return nil
+	})
 
 }
 
