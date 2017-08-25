@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	uuid "github.com/satori/go.uuid"
 	"github.com/urfave/negroni"
 )
@@ -63,9 +64,13 @@ func Router() *negroni.Negroni {
 
 	// router
 	r := mux.NewRouter()
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+	})
 
 	n := negroni.New()
 	n.Use(negroni.HandlerFunc(logger))
+	n.Use(c)
 
 	r.HandleFunc("/users", fetchAllUsersHandler).Methods("GET")
 	r.HandleFunc("/users", newUserHandler).Methods("POST")
