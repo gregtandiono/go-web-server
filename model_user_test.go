@@ -61,8 +61,31 @@ func TestUserFetch(t *testing.T) {
 	assert.Equal(t, u.Email, "mickey@disney.com", "OK")
 }
 
+func TestUserDelete(t *testing.T) {
+	var user User
+	user.ID = uuid.FromStringOrNil("c52639a8-d1ba-4886-8fe8-49818a84d314")
+	err := user.Delete()
+	if err != nil {
+		t.Error("failed to delete user", err)
+	}
+
+	// let's verify if the record is still there
+
+	var s Storage
+	db := s.Init()
+	defer db.Close()
+
+	db.View(func(tx *bolt.Tx) error {
+		bkt := tx.Bucket([]byte("USERS"))
+		v := bkt.Get([]byte("c52639a8-d1ba-4886-8fe8-49818a84d314"))
+		assert.Equal(t, []byte(nil), v, "OK. User does not exist anymore")
+		return nil
+	})
+
+}
+
 func TestUserFetchAll(t *testing.T) {
 	var user User
 	people := user.FetchAll()
-	assert.Equal(t, len(people), 21, "OK")
+	assert.Equal(t, len(people), 20, "OK")
 }
