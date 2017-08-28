@@ -81,3 +81,20 @@ func (u *User) FetchAll() []User {
 	})
 	return people
 }
+
+// Delete removes a key/value pair from the user bucket
+func (u *User) Delete() error {
+	var s Storage
+	db := s.Init()
+	defer db.Close()
+
+	return db.Update(func(tx *bolt.Tx) error {
+		bkt := tx.Bucket([]byte("USERS"))
+		id := u.ID.String()
+		err := bkt.Delete([]byte(id))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}

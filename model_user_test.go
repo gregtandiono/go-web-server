@@ -64,5 +64,5 @@ func TestUserFetch(t *testing.T) {
 func TestUserFetchAll(t *testing.T) {
 	var user User
 	people := user.FetchAll()
-	assert.Equal(t, len(people), 22, "OK")
+	assert.Equal(t, len(people), 21, "OK")
 }

@@ -52,6 +52,21 @@ func fetchAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
 
+func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	var user User
+	vars := mux.Vars(r)
+	id := vars["id"]
+	user.ID = uuid.FromStringOrNil(id)
+	err := user.Delete()
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "user successfully deleted",
+	})
+}
+
 func logger(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	t1 := time.Now()
 	next(w, r)
@@ -75,6 +90,7 @@ func Router() *negroni.Negroni {
 	r.HandleFunc("/users", fetchAllUsersHandler).Methods("GET")
 	r.HandleFunc("/users", newUserHandler).Methods("POST")
 	r.HandleFunc("/users/{id}", fetchOneUserHandler).Methods("GET")
+	r.HandleFunc("/users/{id}", deleteUserHandler).Methods("DELETE")
 
 	n.UseHandler(r)
 	return n

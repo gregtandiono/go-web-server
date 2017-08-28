@@ -62,6 +62,20 @@ func TestFetchOneUserHandler(t *testing.T) {
 	assert.Equal(t, user.ID.String(), "f4bc5612-cb97-4a63-9381-a558ebc0bae5", "OK response is expected")
 }
 
+func TestDeleteUserHandler(t *testing.T) {
+	request, _ := http.NewRequest("DELETE", "/users/f4bc5612-cb97-4a63-9381-a558ebc0bae5", nil)
+	response := httptest.NewRecorder()
+	Router().ServeHTTP(response, request)
+
+	var res map[string]string
+	err := json.Unmarshal(response.Body.Bytes(), &res)
+	if err != nil {
+		t.Error("Failed to delete user", err)
+	}
+
+	assert.Equal(t, "user successfully deleted", res["message"], "OK")
+}
+
 func seedAndTeardownDB() {
 	var s Storage
 	db := s.Init()
